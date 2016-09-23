@@ -15,8 +15,8 @@ public class TestClass : ITestClass {
     private readonly ConnectionMultiplexer _redisContext;
     
     public TestClass() {
-         var redisHost = Environment.GetEnvironmentVariable("REDIS_PORT_6379_TCP_ADDR");
-         _redisContext = ConnectionMultiplexer.Connect(redisHost);
+         //var redisHost = Environment.GetEnvironmentVariable("REDIS_PORT_6379_TCP_ADDR");
+         //_redisContext = ConnectionMultiplexer.Connect(redisHost);
         //  var db = _redisContext.GetDatabase();
         //  db.StringSet("key", "abc");
     }
