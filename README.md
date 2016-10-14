@@ -3,8 +3,8 @@
 ### What is it?
 ---
 Crunch is an AB framework running on C# and .NET Core. This is fairly light weight at the moment and only consists of API endpoints to be performing actions.
-I intend on giving this a web interface, but at the moment, this is what I've got. This takes some concepts from SeatGeeks Sixpack project, and I've conformed
-it to fit more use cases that I've seen at my current company, Zocdoc.
+I intend on giving this a web interface, but at the moment, this is what I've got. This takes some concepts from [SeatGeeks Sixpack](https://github.com/seatgeek/sixpack/) project, and I've conformed
+it to fit a little more typical REST style, while still being pragmatic for certain things; as well as having some safe-guards such as creating the test first, etc.
 
 ### Why "Crunch"
 ---
@@ -52,7 +52,7 @@ however this is not enforced at the moment.
 
 ## Run & Deploy
 
-I currently run and test this in docker containers, and have it using dotnet-watcher polling to periodically recompile
+I currently run and test this in docker containers, and have it using [dotnet-watch](https://github.com/aspnet/DotNetTools) polling to periodically recompile
 and work with the latest build.
 
 1) Ensure Docker is installed on your machine and that you have Docker toolbelt
