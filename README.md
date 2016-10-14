@@ -45,9 +45,14 @@ to what it determines is appropriate.
 however this is not enforced at the moment.
 
 # Run & Deploy
-
 I currently run and test this in docker containers, and have it using [dotnet-watch](https://github.com/aspnet/DotNetTools) polling to periodically recompile
 and work with the latest build.
 
 1) Ensure Docker is installed on your machine and that you have Docker toolbelt
+
 2) Run: `docker-compose up` if you like to have a console hooked up, or add `-d` ro run detached.
+
+# Short-term TODO
+- [ ] Create web interface to view test results/data
+- [ ] Add swagger documentation for API
+- [ ] Create single client to interface with the system
