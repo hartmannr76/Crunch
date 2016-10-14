@@ -1,17 +1,12 @@
 # Crunch
-
-### What is it?
----
 Crunch is an AB framework running on C# and .NET Core. This is fairly light weight at the moment and only consists of API endpoints to be performing actions.
 I intend on giving this a web interface, but at the moment, this is what I've got. This takes some concepts from [SeatGeeks Sixpack](https://github.com/seatgeek/sixpack/) project, and I've conformed
 it to fit a little more typical REST style, while still being pragmatic for certain things; as well as having some safe-guards such as creating the test first, etc.
 
-### Why "Crunch"
----
+# Why "Crunch"
 This is using "AB's" and I thought it was a fun play on the muscle "abs", so a common exercise for abs, is a "crunch". Lame, I know; but it was the best I got.
 
-## The API
----
+# The API
 The current endpoints supported in this project are:
 *   `POST /api/experiments/v1/tests` - Configures a new or existing experiment (if it already existed). This will increment the experiments version and attempt to clear any existing data for the previous version,
 to allow it to be completely independent of other versions.
@@ -21,8 +16,7 @@ test version has changed.
 *   `GET /api/experiments/v1/participants/{participant-id}/conversions/{goal-name}` - Triggers a goal for the participant. Crunch keeps track of all goals that have been triggered for tests, so will only trigger a single
 conversion for any given user/test version. If the version of the test has changed, the user is able to conver that goal for that test again.
 
-## Test configuration
----
+# Test configuration
 I've attempted to make the conversion pretty light weight, so it follows the following example:
 
 ```json
@@ -50,7 +44,7 @@ to what it determines is appropriate.
   - `influence` - The strength of the variant for traffic. The influences of the variants must add up to `1.0`,
 however this is not enforced at the moment.
 
-## Run & Deploy
+# Run & Deploy
 
 I currently run and test this in docker containers, and have it using [dotnet-watch](https://github.com/aspnet/DotNetTools) polling to periodically recompile
 and work with the latest build.
