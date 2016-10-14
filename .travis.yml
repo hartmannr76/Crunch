@@ -1,0 +1,15 @@
+language: csharp
+os: linux # Ubuntu 14.04
+dist: trusty
+sudo: required
+dotnet: 1.0.0-preview2-003121
+services:
+  - redis-server
+
+script:
+  # Run a new console app
+  - mkdir -p "test/test-dotnet-new" && pushd "test/test-dotnet-new"
+  - dotnet new
+  - dotnet restore
+  - dotnet --verbose run
+  - popd
