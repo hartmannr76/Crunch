@@ -7,9 +7,6 @@ services:
   - redis-server
 
 script:
-  # Run a new console app
-  - mkdir -p "test/test-dotnet-new" && pushd "test/test-dotnet-new"
-  - dotnet new
   - dotnet restore
   - dotnet --verbose run
   - popd
