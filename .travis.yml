@@ -4,8 +4,11 @@ dist: trusty
 sudo: required
 dotnet: 1.0.0-preview2-003121
 services:
-  - redis-server
+  - docker
+env:
+  DOCKER_COMPOSE_VERSION: 1.4.2
 
 script:
-  - dotnet restore
-  - dotnet --verbose run
+  - docker-compose build
+  - docker-compose up -d
+  - docker-compose stop
