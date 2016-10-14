@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace netCoreTest.Attributes
+namespace Crunch.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class AutoRegisterAttribute : Attribute

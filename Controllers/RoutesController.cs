@@ -1,25 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Crunch.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using netCoreTest.App;
 
-namespace lirrNetDemo.Controllers
+namespace Crunch.Controllers
 {
-    [Route("api/routes")]
+    [Route("api/routes"), UnavailableIfDisconnected]
     public class RoutesController : Controller
     {
-        private readonly ITestClass _testClass;
-        public RoutesController(ITestClass testClass) {
-            _testClass = testClass;
+        public RoutesController() {
         }
         
         // GET api/values/5
         [HttpGet("{originStation}-{destinationStation}")]
         public ActionResult Get(string originStation, string destinationStation)
         {
-                return Ok(new {orig = _testClass.CallOut(originStation),
+                // return Ok(new {orig = _testClass.CallOut(originStation),
+                //  destination = destinationStation});
+                return Ok(new {orig = originStation,
                  destination = destinationStation});
         }
     }

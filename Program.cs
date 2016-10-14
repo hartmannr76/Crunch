@@ -1,23 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace WebApplication
+namespace Crunch
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
+            var url = Environment.GetEnvironmentVariable("RUNNING_URL");
+            var port = Environment.GetEnvironmentVariable("PORT");
+            Console.Out.WriteLine(string.Format("Running url: {0} ", url));
+            Console.Out.WriteLine(string.Format("Port: {0} ", port));
+            var hostBuilder = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
+                .UseUrls(url+port)
+                .UseStartup<Startup>();
+            
+            var host = hostBuilder.Build();    
             host.Run();
         }
     }

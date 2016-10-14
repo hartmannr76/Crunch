@@ -5,18 +5,13 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
-using netCoreTest.Attributes;
-//using WebApplication.Data;
-using WebApplication.Models;
-using WebApplication.Services;
+using Crunch.Attributes;
 
-namespace WebApplication
+namespace Crunch
 {
     public class Startup
     {
@@ -42,18 +37,10 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            /*services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-                */
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddDefaultTokenProviders();
-
             services.AddMvc();
+            services.AddLogging();
             
             var assemblies = FindAssemblies();
-            Console.Out.WriteLine("Registering Assemblies");
-            Console.Out.WriteLine(string.Format("This assembly is {0}", Assembly.GetEntryAssembly().FullName));
             
             Console.Out.WriteLine(string.Format("{0} assemblies found", assemblies.Count));
             var holderassemblies = assemblies.ToList();
@@ -64,10 +51,6 @@ namespace WebApplication
                 Console.Out.WriteLine(string.Format("Registering {0} for {1}", item.Item1.ToString(), item.Item2.ToString()));
                 RegisterTypeForLifetime(services, item.Item1, item.Item2);
             }
-
-            // Add application services.
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
         }
         
         private ImmutableList<Assembly> FindAssemblies() {
@@ -83,7 +66,7 @@ namespace WebApplication
             return asList;
         }
         
-        private IEnumerable<Tuple<Type, netCoreTest.Attributes.ServiceLifetime>> FindAttributeRegisteredClasses(IEnumerable<Assembly> assemblies) {
+        private IEnumerable<Tuple<Type, Crunch.Attributes.ServiceLifetime>> FindAttributeRegisteredClasses(IEnumerable<Assembly> assemblies) {
             
             return
                 from assembly in assemblies
@@ -94,13 +77,13 @@ namespace WebApplication
                 select Tuple.Create(type.AsType(), lifetime);
         }
         
-        private void RegisterTypeForLifetime(IServiceCollection collection, Type type, netCoreTest.Attributes.ServiceLifetime lifetime) {
+        private void RegisterTypeForLifetime(IServiceCollection collection, Type type, Crunch.Attributes.ServiceLifetime lifetime) {
             var interfaces = type.GetInterfaces();
             
             foreach(var face in interfaces) {
-                if(lifetime == netCoreTest.Attributes.ServiceLifetime.Singleton) {
+                if(lifetime == Crunch.Attributes.ServiceLifetime.Singleton) {
                     collection.AddSingleton(face, type);
-                } else if(lifetime == netCoreTest.Attributes.ServiceLifetime.PerRequest) {
+                } else if(lifetime == Crunch.Attributes.ServiceLifetime.PerRequest) {
                     collection.AddScoped(face, type);
                 } else {
                     collection.AddTransient(face, type);
@@ -126,8 +109,6 @@ namespace WebApplication
             }
 
             app.UseStaticFiles();
-
-            app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 

@@ -1,0 +1,17 @@
+POST http://192.168.99.101:5000/api/experiments/v1/tests HTTP/1.1
+content-type: application/json
+
+{
+    "name": "some-test",
+    "version": 1,
+    "variants": [
+        {
+            "name": "variant-1",
+            "influence": 0.50
+        },
+        {
+            "name": "variant-2",
+            "influence": 0.50
+        }
+    ]
+}
