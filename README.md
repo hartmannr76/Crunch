@@ -50,7 +50,9 @@ and work with the latest build.
 
 1) Ensure Docker is installed on your machine and that you have Docker toolbelt
 
-2) Run: `docker-compose up` if you like to have a console hooked up, or add `-d` ro run detached.
+2) `docker-compose build`
+
+3) `docker-compose up` if you like to have a console hooked up, or add `-d` ro run detached.
 
 # Short-term TODO
 - [ ] Create web interface to view test results/data
