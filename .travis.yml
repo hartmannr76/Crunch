@@ -9,4 +9,3 @@ services:
 script:
   - dotnet restore
   - dotnet --verbose run
-  - popd
