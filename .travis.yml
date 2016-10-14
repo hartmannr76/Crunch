@@ -9,6 +9,12 @@ env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
 script:
+  # Run unit tests
+  - cd ./Crunch.tests
+  - dotnet test
+  # Launch application
+  - cd ./Crunch
   - docker-compose build
   - docker-compose up -d
   - docker-compose stop
+  # Once this is running, we should have some integration tests

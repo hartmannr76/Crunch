@@ -11,7 +11,6 @@ namespace Crunch.Attributes
         IFilterMetadata IFilterContainer.FilterDefinition { get; set; }
 
         public UnavailableIfDisconnectedFilter(IDBConnector databaseConnector) {
-            Console.Out.WriteLine(string.Format("Has Object: {0}", databaseConnector.IsConnected));
             DatabaseConnector = databaseConnector;
         }
 
