@@ -10,7 +10,7 @@ env:
 
 script:
   # Run unit tests
-  - cd ./Crunch.tests
+  - cd ./Crunch.Tests
   - dotnet test
   # Launch application
   - cd ./Crunch
