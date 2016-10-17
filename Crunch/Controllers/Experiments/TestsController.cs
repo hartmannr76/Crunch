@@ -25,7 +25,6 @@ namespace Crunch.Controllers.Experiments
         public ActionResult GetTest(string test)
         {
             var testConfig = _db.GetTest(test);
-            _db.SetConnection(false);
 
             return Ok(testConfig);
         }
