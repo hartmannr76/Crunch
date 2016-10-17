@@ -11,9 +11,11 @@ env:
 script:
   # Run unit tests
   - cd ./Crunch.Tests
+  - dotnet restore
+  - dotnet build
   - dotnet test
   # Launch application
-  - cd ./Crunch
+  - cd ../Crunch
   - docker-compose build
   - docker-compose up -d
   - docker-compose stop
