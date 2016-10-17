@@ -14,7 +14,7 @@ namespace Crunch.Attributes
             DatabaseConnector = databaseConnector;
         }
 
-        void IActionFilter.OnActionExecuting(ActionExecutingContext context)
+        public void OnActionExecuting(ActionExecutingContext context)
         {
             if(!DatabaseConnector.IsConnected) {
                 context.Result = new Microsoft.AspNetCore.Mvc.StatusCodeResult(503);
