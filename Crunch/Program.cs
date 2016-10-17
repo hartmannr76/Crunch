@@ -16,7 +16,7 @@ namespace Crunch
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                //.UseUrls(url+":"+port)
+                .UseUrls(url+":"+port)
                 .UseStartup<Startup>();
             
             var host = hostBuilder.Build();    
