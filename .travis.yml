@@ -10,9 +10,8 @@ env:
 
 script:
   # Run unit tests
-  - cd ./Crunch.Tests
   - dotnet restore
-  - ls -la
+  - cd ./Crunch.Tests
   - dotnet build
   - dotnet test
   # Launch application
