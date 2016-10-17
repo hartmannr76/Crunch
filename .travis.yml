@@ -12,6 +12,7 @@ script:
   # Run unit tests
   - cd ./Crunch.Tests
   - dotnet restore
+  - ls -la
   - dotnet build
   - dotnet test
   # Launch application
