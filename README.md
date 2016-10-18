@@ -1,4 +1,6 @@
 # Crunch
+Travis: [![Build Status](https://travis-ci.org/hartmannr76/Crunch.svg?branch=master)](https://travis-ci.org/hartmannr76/Crunch)
+
 Crunch is an AB framework running on C# and .NET Core. This is fairly light weight at the moment and only consists of API endpoints to be performing actions.
 I intend on giving this a web interface, but at the moment, this is what I've got. This takes some concepts from [SeatGeeks Sixpack](https://github.com/seatgeek/sixpack/) project, and I've conformed
 it to fit a little more typical REST style, while still being pragmatic for certain things; as well as having some safe-guards such as creating the test first, etc.
