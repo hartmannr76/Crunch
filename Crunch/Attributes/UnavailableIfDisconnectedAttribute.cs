@@ -11,11 +11,10 @@ namespace Crunch.Attributes
         IFilterMetadata IFilterContainer.FilterDefinition { get; set; }
 
         public UnavailableIfDisconnectedFilter(IDBConnector databaseConnector) {
-            Console.Out.WriteLine(string.Format("Has Object: {0}", databaseConnector.IsConnected));
             DatabaseConnector = databaseConnector;
         }
 
-        void IActionFilter.OnActionExecuting(ActionExecutingContext context)
+        public void OnActionExecuting(ActionExecutingContext context)
         {
             if(!DatabaseConnector.IsConnected) {
                 context.Result = new Microsoft.AspNetCore.Mvc.StatusCodeResult(503);
