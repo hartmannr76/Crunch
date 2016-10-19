@@ -18,5 +18,10 @@ script:
   - cd ../Crunch
   - docker-compose build
   - docker-compose up -d
-  - docker-compose stop
   # Once this is running, we should have some integration tests
+  - export DOCKER_TEST_ADDRESS="$(docker-machine ip default)"
+  - cd ../Crunch.Integration.Tests
+  - dotnet test
+  # Clean up the running instance
+  - docker-compose stop
+  
