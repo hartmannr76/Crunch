@@ -1,0 +1,22 @@
+redis:
+  image: redis:latest
+  command: redis-server --appendonly yes
+  volumes:
+    - ./Crunch/redis-data:/data
+web:
+  environment:
+    - PORT=5000
+  build: ./Crunch
+  ports:
+    - "5000:5000"
+  volumes:
+    - ./Crunch:/app
+  links:
+    - redis
+test:
+  environment:
+      - TEST_WEB_ADDRESS=web
+  build: ./Crunch.Integration.Tests
+  links:
+      - redis
+      - web

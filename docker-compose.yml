@@ -2,14 +2,14 @@ redis:
   image: redis:latest
   command: redis-server --appendonly yes
   volumes:
-    - ./data:/data
+    - ./Crunch/redis-data:/data
 web:
   environment:
     - PORT=5000
-  build: .
+  build: ./Crunch
   ports:
     - "5000:5000"
   volumes:
-    - .:/app
+    - ./Crunch:/app
   links:
     - redis

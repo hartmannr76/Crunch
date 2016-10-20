@@ -16,12 +16,14 @@ namespace Crunch.Integration.Tests.Controllers
         [SetUp]
         public void SetUp()
         {
-            var apiAddress = Environment.GetEnvironmentVariable("DOCKER_TEST_ADDRESS").Trim();
+            System.Threading.Thread.Sleep(10000);
+            var apiAddress = Environment.GetEnvironmentVariable("TEST_WEB_ADDRESS").Trim();
             var cleanedAddress = string.Format("http://{0}:5000", apiAddress);
 
             _client = new HttpClient {
                 BaseAddress = new Uri(cleanedAddress)
             };
+            
         }
 
         [Test]
