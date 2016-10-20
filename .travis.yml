@@ -9,26 +9,24 @@ env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
 before_install:
-  - curl -L https://github.com/docker/machine/releases/download/v0.8.0/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
-  - chmod +x /usr/local/bin/docker-machine
   # Run unit tests
   - dotnet restore
   - cd ./Crunch.Tests
   - dotnet build
   - dotnet test
   # Launch application
-  - cd ../Crunch
-  - docker-compose build
-  - docker-compose up -d
+  - cd ../
+  - docker-compose -f docker-compose.test.yml build
+  - docker-compose -f docker-compose.test.yml up
   # Once this is running, we should have some integration tests
-  - export DOCKER_TEST_ADDRESS="$(docker-machine ip default)"
-  - echo $DOCKER_TEST_ADDRESS
-  - echo $DOCKER_HOST_ADDRESS
-  - cd ../Crunch.Integration.Tests
-  - dotnet test
+  #- export DOCKER_TEST_ADDRESS="$(docker-machine ip default)"
+  #- echo $DOCKER_TEST_ADDRESS
+  #- echo $DOCKER_HOST_ADDRESS
+  #- cd ../Crunch.Integration.Tests
+  #- dotnet test
   # Clean up the running instance
-  - cd ../Crunch
-  - docker-compose stop
+  #- cd ../Crunch
+  #- docker-compose stop
 
   # When we need to push up the docker container
   # after_success:
