@@ -8,7 +8,7 @@ services:
 env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
-script:
+before_install:
   # Run unit tests
   - dotnet restore
   - cd ./Crunch.Tests
@@ -19,7 +19,7 @@ script:
   - docker-compose build
   - docker-compose up -d
   # Once this is running, we should have some integration tests
-  - export DOCKER_TEST_ADDRESS="$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' crunch_web_1)"
+  - export DOCKER_TEST_ADDRESS="192.168.99.101"
   - echo $DOCKER_TEST_ADDRESS
   - echo $DOCKER_HOST_ADDRESS
   - cd ../Crunch.Integration.Tests
