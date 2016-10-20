@@ -19,7 +19,7 @@ script:
   - docker-compose build
   - docker-compose up -d
   # Once this is running, we should have some integration tests
-  - export DOCKER_TEST_ADDRESS="localhost"
+  - export DOCKER_TEST_ADDRESS="$(docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq) | grep crunch_web_1 | cut -d '-' -f 2)"
   - cd ../Crunch.Integration.Tests
   - dotnet test
   # Clean up the running instance
