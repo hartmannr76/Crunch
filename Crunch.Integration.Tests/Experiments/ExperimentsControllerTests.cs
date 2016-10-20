@@ -4,32 +4,27 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net;
+using Crunch.Integration.Tests.Utils;
 
 namespace Crunch.Integration.Tests.Controllers
 {
     [TestFixture]
-    public class ExerimentsControllerTests
+    internal class ExerimentsControllerTests : ControllerTests
     {
         private const string ExperimentsRoot = "api/experiments/v1/tests";
         HttpClient _client;
+        RandomDataGenerator _generator;
 
         [SetUp]
         public void SetUp()
         {
-            System.Threading.Thread.Sleep(10000);
-            var apiAddress = Environment.GetEnvironmentVariable("TEST_WEB_ADDRESS").Trim();
-            var cleanedAddress = string.Format("http://{0}:5000", apiAddress);
-
-            _client = new HttpClient {
-                BaseAddress = new Uri(cleanedAddress)
-            };
-            
+            _client = CreateClient();
+            _generator = new RandomDataGenerator();
         }
 
         [Test]
         public async Task ConfigureTest_NewTest_HasVersion_1() {
-            var r = new Random();
-            var name = "foobar-" + r.Next(maxValue: Int32.MaxValue).ToString();
+            var name = _generator.RandomString();
 
             var test = new TestConfiguration {
                 Name = name,
@@ -43,6 +38,26 @@ namespace Crunch.Integration.Tests.Controllers
             var parsedResponse = await getRequest.Content.ReadAsAsync<TestConfiguration>();
             Assert.IsNotNull(parsedResponse);
             Assert.AreEqual(1L, parsedResponse.Version);
+        }
+
+        [Test]
+        public async Task ConfigureTest_ExistingTest_IncrementsVersion() {
+            var name = _generator.RandomString();
+
+            var test = new TestConfiguration {
+                Name = name,
+                Variants = new List<Variant>() { new Variant{ Name = "1", Influence = 0.1f } }
+            };
+
+            // Creates first version of the test
+            await _client.PostAsJsonAsync(ExperimentsRoot, test);
+            // Uses the same config to force it to increment
+            var message = await _client.PostAsJsonAsync(ExperimentsRoot, test);
+
+            var getRequest = await _client.GetAsync(ExperimentsRoot + "/" + name);
+            var parsedResponse = await getRequest.Content.ReadAsAsync<TestConfiguration>();
+            Assert.IsNotNull(parsedResponse);
+            Assert.AreEqual(2L, parsedResponse.Version);
         }
     }
 
