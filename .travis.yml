@@ -9,6 +9,8 @@ env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
 before_install:
+  - curl -L https://github.com/docker/machine/releases/download/v0.8.0/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+  - chmod +x /usr/local/bin/docker-machine
   # Run unit tests
   - dotnet restore
   - cd ./Crunch.Tests
@@ -19,11 +21,19 @@ before_install:
   - docker-compose build
   - docker-compose up -d
   # Once this is running, we should have some integration tests
-  - export DOCKER_TEST_ADDRESS="crunch_web_1"
+  - export DOCKER_TEST_ADDRESS="$(docker-machine ip default)"
   - echo $DOCKER_TEST_ADDRESS
   - echo $DOCKER_HOST_ADDRESS
   - cd ../Crunch.Integration.Tests
   - dotnet test
   # Clean up the running instance
+  - cd ../Crunch
   - docker-compose stop
+
+  # When we need to push up the docker container
+  # after_success:
+  # - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  #   docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  #   docker push USER/REPO;
+  #   fi
   
