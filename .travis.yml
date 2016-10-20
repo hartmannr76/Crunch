@@ -19,7 +19,7 @@ before_install:
   - docker-compose build
   - docker-compose up -d
   # Once this is running, we should have some integration tests
-  - export DOCKER_TEST_ADDRESS="192.168.99.101"
+  - export DOCKER_TEST_ADDRESS="crunch_web_1"
   - echo $DOCKER_TEST_ADDRESS
   - echo $DOCKER_HOST_ADDRESS
   - cd ../Crunch.Integration.Tests

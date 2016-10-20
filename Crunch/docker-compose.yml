@@ -8,7 +8,7 @@ web:
     - PORT=5000
   build: .
   ports:
-    - "192.168.99.101:5000:5000"
+    - "5000:5000"
   volumes:
     - .:/app
   links:
