@@ -36,7 +36,7 @@ namespace Crunch.Integration.Tests.Controllers
 
             var getRequest = await _client.GetAsync(ExperimentsRoot + "/" + name);
             var parsedResponse = await getRequest.Content.ReadAsAsync<TestConfiguration>();
-            Assert.IsNotNull(parsedResponse);
+            Assert.IsNull(parsedResponse);
             Assert.AreEqual(1L, parsedResponse.Version);
         }
 
