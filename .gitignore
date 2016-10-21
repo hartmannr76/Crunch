@@ -151,6 +151,7 @@ publish/
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
+**/*.nuget.props
 
 # Microsoft Azure Build Output
 csx/
@@ -232,3 +233,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+# Redis data
+Crunch/redis-data/

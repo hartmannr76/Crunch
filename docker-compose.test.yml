@@ -1,0 +1,10 @@
+test:
+  environment:
+      - TEST_WEB_ADDRESS=web
+  build: ./Crunch.Integration.Tests
+  command: ./wait-for-it.sh web:5000
+  volumes:
+    - ./Crunch.Integration.Tests:/app
+  links:
+      - redis
+      - web

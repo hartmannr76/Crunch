@@ -8,15 +8,20 @@ services:
 env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
-script:
+before_install:
   # Run unit tests
   - dotnet restore
+script:
   - cd ./Crunch.Tests
   - dotnet build
   - dotnet test
-  # Launch application
-  - cd ../Crunch
-  - docker-compose build
-  - docker-compose up -d
-  - docker-compose stop
-  # Once this is running, we should have some integration tests
+  # Launch application and tests
+  - cd ../
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run test ./wait-for-it.sh web:5000 -- dotnet test
+
+  # When we need to push up the docker container
+  # after_success:
+  # - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  #   docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  #   docker push USER/REPO;
+  #   fi
