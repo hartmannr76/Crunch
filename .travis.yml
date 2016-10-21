@@ -11,6 +11,7 @@ env:
 before_install:
   # Run unit tests
   - dotnet restore
+script:
   - cd ./Crunch.Tests
   - dotnet build
   - dotnet test
