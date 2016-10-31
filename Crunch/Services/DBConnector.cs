@@ -7,6 +7,7 @@ using System.Linq;
 using Crunch.Models.Experiments;
 using System.Threading.Tasks;
 using Crunch.Attributes;
+using Crunch.Extensions;
 
 namespace Crunch.Services
 {
@@ -16,7 +17,12 @@ namespace Crunch.Services
         TestConfiguration GetTest(string name, IDatabase dbContext = null);
         string EnrollParticipantInTest(string clientId, string test);
         void RecordGoal(string clientId, string goal, IDatabase dbContext = null);
-        void SetConnection(bool isOn);
+        long GetConversionCountForTestAndVariant(
+                string test,
+                string variant, 
+                long version,
+                string goal);
+        long GetTotalUserCountForVariant(string test, string variant, long version);
         bool IsConnected { get; }
     }
 
@@ -25,7 +31,8 @@ namespace Crunch.Services
         #region DB Key Constants
         private const string ExperimentKeyFormat = "e:{0}";
         private const string ExperimentCurrentCountKeyFormat = "e:{0}:_all";
-        private const string ExperimentGoalCountKeyFormat = "e:{0}:v:{1}:g:{2}";
+        private const string ExperimentVariantVersionKeyFormat = "e:{0}:{1}:v{2}";
+        private const string ExperimentGoalCountKeyFormat = "e:{0}:{1}:v:{2}:g:{3}";
         private const string ParticipantKeyFormat = "p:{0}";
         private const string ParticipantGoalsFormat = "p:{0}:_goals";
         #endregion
@@ -52,10 +59,6 @@ namespace Crunch.Services
             }
         }
 
-        public void SetConnection(bool isOn) {
-            IsConnected = isOn;
-        }
-
         public string EnrollParticipantInTest(string clientId, string test) {
             var db = _redisContext.GetDatabase();
             
@@ -64,7 +67,7 @@ namespace Crunch.Services
             // check to see if the test is valid
             if (currentTest == null) {
                 throw new Exception(
-                    string.Format("Test {0} has not been configured, cannot enroll", test));
+                    "Test {0} has not been configured, cannot enroll".FormatWith(test));
             }
 
             var participant = GetParticipant(clientId);
@@ -88,7 +91,8 @@ namespace Crunch.Services
                     SelectedVariant = selectedVariant,
                     VersionAtSelection = currentTest.Version
                 });
-                db.StringIncrement(string.Format(ExperimentCurrentCountKeyFormat, test));
+                db.StringIncrement(ExperimentCurrentCountKeyFormat.FormatWith(test));
+                db.StringIncrement(ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant));
             } else {
                 if (existingTest.VersionAtSelection == currentTest.Version) {
                     _logger.LogDebug("User already had variant");
@@ -97,23 +101,25 @@ namespace Crunch.Services
                     _logger.LogDebug("User variant version differs, updating");
                     existingTest.SelectedVariant = selectedVariant;
                     existingTest.VersionAtSelection = currentTest.Version;
-                    db.StringIncrement(string.Format(ExperimentCurrentCountKeyFormat, test));
+                    db.StringIncrement(ExperimentCurrentCountKeyFormat.FormatWith(test));
 
                     // clean existing recorded goals for the new test
                     var goalsAsSet = GetParticipantGoalSet(participant.ClientId, db);
                     var experimentGoals = goalsAsSet.Keys.Where(x => x.StartsWith(test+":")).ToList();
-                    Console.Out.WriteLine(goalsAsSet.ToJson());
-                    Console.Out.WriteLine(string.Format("Removing {0} goals from user set", experimentGoals.Count));
+
                     var compoundCommands = new List<Task>();
+                    compoundCommands.Add(
+                        db.StringIncrementAsync(ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant))
+                    );
                     experimentGoals.ForEach(x => compoundCommands.Add(db.SetRemoveAsync(
-                            string.Format(ParticipantGoalsFormat, clientId),
+                            ParticipantGoalsFormat.FormatWith(clientId),
                             x)));
                     db.WaitAll(compoundCommands.ToArray());
                 }
             }
 
             var participantBytes = SerializeObject(participant);
-            db.StringSet(string.Format(ParticipantKeyFormat, clientId), participantBytes);
+            db.StringSet(ParticipantKeyFormat.FormatWith(clientId), participantBytes);
 
             return selectedVariant;
         }
@@ -126,18 +132,18 @@ namespace Crunch.Services
             byte[] configBytes;
 
             if (currentTest == null) {
-                _logger.LogDebug(string.Format("test {0} does not exist, creating", name));
+                _logger.LogDebug("test {0} does not exist, creating".FormatWith(name));
                 config.Version = 1;
                 configBytes = SerializeObject(config);
             } else {
-                _logger.LogDebug(string.Format("test {0} exists, updating", name));
+                _logger.LogDebug("test {0} exists, updating".FormatWith(name));
                 currentTest.Variants = config.Variants;
                 currentTest.Version += 1;
 
                 configBytes = SerializeObject(currentTest);
             }
 
-            db.StringSet(string.Format(ExperimentKeyFormat, name), configBytes);
+            db.StringSet(ExperimentKeyFormat.FormatWith(name), configBytes);
         }
 
         public void RecordGoal(string clientId, string goal, IDatabase dbContext = null) {
@@ -153,17 +159,21 @@ namespace Crunch.Services
             var compoundCommands = new List<Task>();
 
             foreach(var test in participant.EnrolledTests) {
-                if(goalsAsSet.ContainsKey(string.Format("{0}:{1}", test.Name, goal))) {
-                    _logger.LogDebug(string.Format("Previously recorded {0} for test {1}", goal, test.Name));
+                if(goalsAsSet.ContainsKey("{0}:{1}".FormatWith(test.Name, goal))) {
+                    _logger.LogDebug("Previously recorded {0} for test {1}".FormatWith(goal, test.Name));
                     continue;
                 }
 
-                _logger.LogDebug(string.Format("Tracking {0} for test {1}", goal, test.Name));
+                _logger.LogDebug("Tracking {0} for test {1}".FormatWith(goal, test.Name));
                 var setRecorded = db.SetAddAsync(
-                        string.Format(ParticipantGoalsFormat, clientId),
-                        string.Format("{0}:{1}", test.Name, goal));
+                        ParticipantGoalsFormat.FormatWith(clientId),
+                        "{0}:{1}".FormatWith(test.Name, goal));
                 var incrementCounter = db.StringIncrementAsync(
-                    string.Format(ExperimentGoalCountKeyFormat, test.Name, test.VersionAtSelection, goal));
+                    ExperimentGoalCountKeyFormat.FormatWith(
+                        test.Name,
+                        test.VersionAtSelection,
+                        test.SelectedVariant,
+                        goal));
 
                 compoundCommands.Add(setRecorded);
                 compoundCommands.Add(incrementCounter);
@@ -175,7 +185,7 @@ namespace Crunch.Services
         public TestConfiguration GetTest(string name, IDatabase dbContext = null) {
             var db = dbContext ?? _redisContext.GetDatabase();
 
-            var configAsBytes = db.StringGet(string.Format(ExperimentKeyFormat, name));
+            var configAsBytes = db.StringGet(ExperimentKeyFormat.FormatWith(name));
             
             if (configAsBytes.IsNullOrEmpty) {
                 return null;
@@ -187,7 +197,7 @@ namespace Crunch.Services
 
         public Participant GetParticipant(string clientId, IDatabase dbContext = null) {
             var db = dbContext ?? _redisContext.GetDatabase();
-            var participantAsBytes = db.StringGet(string.Format(ParticipantKeyFormat, clientId));
+            var participantAsBytes = db.StringGet(ParticipantKeyFormat.FormatWith(clientId));
             
             if (participantAsBytes.IsNullOrEmpty) {
                 return null;
@@ -195,6 +205,29 @@ namespace Crunch.Services
 
             var participantString = System.Text.Encoding.Unicode.GetString(participantAsBytes);
             return participantString.FromJson<Participant>();
+        }
+
+        public long GetTotalUserCountForVariant(string test, string variant, long version) {
+            var db = _redisContext.GetDatabase();
+
+            return (long)db.StringGet(ExperimentVariantVersionKeyFormat.FormatWith(
+                        test,
+                        version,
+                        variant));
+        }
+
+        public long GetConversionCountForTestAndVariant(
+                string test,
+                string variant, 
+                long version,
+                string goal) {
+            var db = _redisContext.GetDatabase();
+
+            return (long)db.StringGet(ExperimentGoalCountKeyFormat.FormatWith(
+                        test,
+                        version,
+                        variant,
+                        goal));
         }
 
         #region Helpers
@@ -207,7 +240,7 @@ namespace Crunch.Services
         }
 
         private Dictionary<string, bool> GetParticipantGoalSet(string clientId, IDatabase db) {
-            var existingGoals = db.SetMembers(string.Format(ParticipantGoalsFormat, clientId));
+            var existingGoals = db.SetMembers(ParticipantGoalsFormat.FormatWith(clientId));
             return existingGoals.ToDictionary(x => x.ToString(), y => true);
         }
 

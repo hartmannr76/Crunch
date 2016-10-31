@@ -1,6 +1,7 @@
 using Crunch.Services;
 using Microsoft.AspNetCore.Mvc;
 using Crunch.Models.Experiments;
+using System.Collections.Generic;
 
 namespace Crunch.Controllers.Experiments
 {
@@ -31,11 +32,30 @@ namespace Crunch.Controllers.Experiments
 
         [HttpGet]
         [Route("api/experiments/v1/tests/{test}/results")]
-        public ActionResult GetTestResults(string test, string version)
+        public ActionResult GetTestResults(string test, string[] goal)
         {
             var testConfig = _db.GetTest(test);
 
-            return Ok(testConfig);
+            var variantData = new List<object>();
+
+            foreach(var variant in testConfig.Variants) {
+                var count = _db.GetTotalUserCountForVariant(test, variant.Name, testConfig.Version);
+
+                var conversions = new List<object>();
+
+                foreach(var g in goal) {
+                    var goalCount = _db.GetConversionCountForTestAndVariant(test, variant.Name, testConfig.Version, g);
+                    conversions.Add(new {goal = g, count = goalCount});
+                }
+
+                variantData.Add(new {
+                    variant = variant.Name,
+                    users = count,
+                    conversions = conversions
+                });
+            }
+
+            return Ok(variantData);
         }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Crunch.Testing.Controllers
 {
-    [Route("api/testing/verification")]
+    [Route("api/verification")]
     public class TestingController : Controller
     {
         public TestingController() {}

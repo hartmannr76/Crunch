@@ -13,8 +13,6 @@ namespace Crunch.Controllers
         [HttpGet("{originStation}-{destinationStation}")]
         public ActionResult Get(string originStation, string destinationStation)
         {
-                // return Ok(new {orig = _testClass.CallOut(originStation),
-                //  destination = destinationStation});
                 return Ok(new {orig = originStation,
                  destination = destinationStation});
         }

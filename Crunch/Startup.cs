@@ -39,6 +39,7 @@ namespace Crunch
         {
             services.AddMvc();
             services.AddLogging();
+            services.AddSwaggerGen();
             
             var assemblies = FindAssemblies();
             
@@ -102,13 +103,13 @@ namespace Crunch
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
+                app.UseSwagger();
+                app.UseSwaggerUi();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            app.UseStaticFiles();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 

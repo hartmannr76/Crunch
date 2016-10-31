@@ -2,6 +2,7 @@
   "userSecretsId": "aspnet-WebApplication-0799fe3e-6eaf-4c5f-b40e-7c6bfd5dfa9a",
   "version": "1.0.0-*",
   "dependencies": {
+    "Crunch.Models": "1.0.0-*",
     "Microsoft.NETCore.App": {
       "version": "1.0.0",
       "type": "platform"
@@ -39,6 +40,10 @@
     },
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
       "version": "1.0.0-preview2-final",
+      "type": "build"
+    },
+    "Swashbuckle": {
+      "version": "6.0.0-beta902",
       "type": "build"
     }
   },
