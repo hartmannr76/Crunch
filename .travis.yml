@@ -21,4 +21,4 @@ script:
 
 after_success:
   # When we need to push up the docker container
-  - docker_push.sh
+  - ./docker_push.sh
