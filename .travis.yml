@@ -22,7 +22,7 @@ script:
   # When we need to push up the docker container
   after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker tag crunch_web:lastest hartmannr76/crunch-api
-    docker push hartmannr76/hartmannr76/crunch-api;
-    fi
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker tag crunch_web:lastest hartmannr76/crunch-api
+  - docker push hartmannr76/hartmannr76/crunch-api;
+  - fi
