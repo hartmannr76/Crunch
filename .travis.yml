@@ -21,4 +21,6 @@ script:
 
 after_success:
   # When we need to push up the docker container
+  - docker-compose -f docker-compose.yml -p crunch build
+  - docker images
   - ./docker_push.sh
