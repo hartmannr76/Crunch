@@ -1,6 +1,7 @@
 {
     "projects":[
         "Crunch",
-        "Crunch.Tests"
+        "Crunch.Tests",
+        "Crunch.Shared"
     ]
 }

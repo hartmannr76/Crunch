@@ -6,7 +6,7 @@
       "version": "1.0.0-rc2-3002702",
       "type": "platform"
     },
-    "Crunch": "1.0.0-*",
+    "Crunch.Shared": "1.0.0-*",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"

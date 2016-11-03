@@ -1,6 +1,6 @@
 using Crunch.Attributes;
 using System;
-using Crunch.Models.Experiments;
+using Crunch.Shared.Models.Experiments;
 
 namespace Crunch.Services
 {
