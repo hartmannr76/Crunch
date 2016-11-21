@@ -29,8 +29,8 @@
     "Microsoft.Extensions.Logging": "1.0.0",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Options": "1.0.0-*",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
     "StackExchange.Redis": "1.1.605",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
