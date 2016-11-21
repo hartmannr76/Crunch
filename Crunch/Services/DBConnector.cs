@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using NuGet.Protocol.Core.v3;
 using System.Linq;
 using Crunch.Models.Experiments;
-using Crunch.Shared.Models.Experiments;
 using System.Threading.Tasks;
 using Crunch.Attributes;
 using Crunch.Extensions;

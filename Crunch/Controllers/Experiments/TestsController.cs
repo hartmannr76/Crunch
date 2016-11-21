@@ -1,6 +1,6 @@
 using Crunch.Services;
 using Microsoft.AspNetCore.Mvc;
-using Crunch.Shared.Models.Experiments;
+using Crunch.Models.Experiments;
 using System.Collections.Generic;
 
 namespace Crunch.Controllers.Experiments

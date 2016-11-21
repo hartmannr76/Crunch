@@ -1,5 +1,11 @@
 FROM microsoft/dotnet:latest
+
 COPY . /app
+
+WORKDIR /lib
+RUN ["dotnet", "restore"]
+RUN ["dotnet", "build"]
+
 WORKDIR /app
  
 RUN ["dotnet", "restore"]

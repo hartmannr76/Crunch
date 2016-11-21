@@ -21,4 +21,5 @@ script:
 
 after_success:
   # When we need to push up the docker container
-  - ./docker_push.sh
+  - ./deploy/docker_push.sh
+  - ./deploy/push_to_ecs.sh
