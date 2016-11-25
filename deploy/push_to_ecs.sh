@@ -5,7 +5,7 @@
   # Deploy only if we're testing the master branch
 #   if [ "$TRAVIS_BRANCH" == "master" ]; then
     echo "Deploying $TRAVIS_BRANCH on $TASK_DEFINITION"
-    ./bin/ecs_deploy -c $TASK_DEFINITION -n $SERVICE -i $REMOTE_IMAGE_URL:latest
+    ./deploy/ecs_deploy.sh -c $TASK_DEFINITION -n $SERVICE -i $REMOTE_IMAGE_URL:latest
 #   else
     # echo "Skipping deploy because it's not an allowed branch"
 #   fi
