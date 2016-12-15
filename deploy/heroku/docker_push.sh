@@ -4,8 +4,9 @@
     
     # Build and push
     # docker build -t $IMAGE_NAME .
-    heroku plugins:install heroku-container-registry
-    heroku container:login
+    # heroku plugins:install heroku-container-registry
+    #heroku container:login
+    docker login --email=_ --username=_ --password=$HEROKU_KEY registry.heroku.com
     echo "Pushing $IMAGE_NAME:latest"
     docker tag crunch_web "$HEROKU_REMOTE_URL/$HEROKU_APP/web"
     docker push "$HEROKU_REMOTE_URL/$HEROKU_APP/web"
