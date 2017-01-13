@@ -45,8 +45,8 @@
       "version": "6.0.0-beta902",
       "type": "build"
     },
-    "EasyIoC": "1.0.0-*",
-    "EasyIoC.Microsoft": "1.0.0-*"
+    "EasyIoC": "1.0.1-*",
+    "EasyIoC.Microsoft": "1.0.1-*"
   },
 
   "tools": {

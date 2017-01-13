@@ -22,13 +22,13 @@ namespace Crunch.Repositories
     [AutoRegister(ServiceLifetime.Singleton)]
     public class ParticipantRepository : IParticipantRepository {
         private readonly IVariantPicker _variantPicker;
-        private readonly ILogger<TestRepository> _logger;
+        private readonly ILogger<ParticipantRepository> _logger;
         private readonly IDBConnector _dbConnector;
         private readonly ITestContext _testContext;
         private readonly IParticipantContext _participantContext;
         
         public ParticipantRepository(
-            ILogger<TestRepository> logger,
+            ILogger<ParticipantRepository> logger,
             IDBConnector dbConnector,
             IVariantPicker variantPicker,
             ITestContext testContext,
