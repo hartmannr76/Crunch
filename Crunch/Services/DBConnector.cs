@@ -3,6 +3,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using EasyIoC;
 using EasyIoC.Attributes;
+using Crunch.Extensions;
 
 namespace Crunch.Services
 {
@@ -24,6 +25,8 @@ namespace Crunch.Services
 
             try {
                 var redisHost = Environment.GetEnvironmentVariable("REDIS_PORT_6379_TCP_ADDR");
+
+                _logger.LogInformation("Attempting to connect to: {0}".FormatWith(redisHost));
                 _redisContext = ConnectionMultiplexer.Connect(redisHost);
 
                 IsConnected = true;
