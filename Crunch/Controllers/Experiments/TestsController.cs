@@ -3,9 +3,11 @@ using Crunch.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Crunch.Models.Experiments;
 using System.Collections.Generic;
+using Crunch.Attributes;
 
 namespace Crunch.Controllers.Experiments
 {
+    [UnavailableIfDisconnected]
     public class TestsController : Controller {
         private readonly ITestRepository _testRepository;
         private readonly ITestContext _testContext;
