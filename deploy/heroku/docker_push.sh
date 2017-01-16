@@ -7,6 +7,7 @@
     # heroku plugins:install heroku-container-registry
     #heroku container:login
     # we need to login here somehow
+    docker-compose -f docker-compose.heroku.yml build
     heroku plugins:install heroku-container-registry
     docker login --email=_ --username=_ --password=$HEROKU_API_KEY registry.heroku.com
     echo "Pushing $IMAGE_NAME:latest"
