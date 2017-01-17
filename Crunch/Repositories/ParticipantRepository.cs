@@ -10,6 +10,7 @@ using Crunch.Services;
 using Crunch.Contexts;
 using EasyIoC;
 using EasyIoC.Attributes;
+using Crunch.Database;
 
 namespace Crunch.Repositories
 {
@@ -64,6 +65,7 @@ namespace Crunch.Repositories
             }
 
             var existingTest = participant.EnrolledTests.Where(x => x.Name == test).FirstOrDefault();
+            var pipelineBuilder = new PipelineBuilder(db);
 
             if (existingTest == null) {
                 _logger.LogDebug("User did not have test, setting up");
@@ -72,8 +74,8 @@ namespace Crunch.Repositories
                     SelectedVariant = selectedVariant,
                     VersionAtSelection = currentTest.Version
                 });
-                db.StringIncrement(DatabaseKeys.ExperimentCurrentCountKeyFormat.FormatWith(test));
-                db.StringIncrement(DatabaseKeys.ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant));
+                pipelineBuilder.StringIncrement(DatabaseKeys.ExperimentCurrentCountKeyFormat.FormatWith(test));
+                pipelineBuilder.StringIncrement(DatabaseKeys.ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant));
             } else {
                 if (existingTest.VersionAtSelection == currentTest.Version) {
                     _logger.LogDebug("User already had variant");
@@ -82,25 +84,22 @@ namespace Crunch.Repositories
                     _logger.LogDebug("User variant version differs, updating");
                     existingTest.SelectedVariant = selectedVariant;
                     existingTest.VersionAtSelection = currentTest.Version;
-                    db.StringIncrement(DatabaseKeys.ExperimentCurrentCountKeyFormat.FormatWith(test));
+                    pipelineBuilder.StringIncrement(DatabaseKeys.ExperimentCurrentCountKeyFormat.FormatWith(test));
 
                     // clean existing recorded goals for the new test
                     var goalsAsSet = _participantContext.GetParticipantsGoals(participant.ClientId, db);
                     var experimentGoals = goalsAsSet.Keys.Where(x => x.StartsWith(test+":")).ToList();
-
-                    var compoundCommands = new List<Task>();
-                    compoundCommands.Add(
-                        db.StringIncrementAsync(DatabaseKeys.ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant))
-                    );
-                    experimentGoals.ForEach(x => compoundCommands.Add(db.SetRemoveAsync(
-                            DatabaseKeys.ParticipantGoalsFormat.FormatWith(clientId),
-                            x)));
-                    db.WaitAll(compoundCommands.ToArray());
+                    
+                    pipelineBuilder.StringIncrement(DatabaseKeys.ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant));
+                    pipelineBuilder.SetRemoveRange(DatabaseKeys.ParticipantGoalsFormat.FormatWith(clientId), experimentGoals);
+                    pipelineBuilder.Execute();
                 }
             }
 
             var participantBytes = participant.SerializeAsJson();
-            db.StringSet(DatabaseKeys.ParticipantKeyFormat.FormatWith(clientId), participantBytes);
+            pipelineBuilder.StringSet(DatabaseKeys.ParticipantKeyFormat.FormatWith(clientId), participantBytes);
+
+            pipelineBuilder.Execute();
 
             return selectedVariant;
         }
@@ -115,7 +114,7 @@ namespace Crunch.Repositories
             }
 
             var goalsAsSet = _participantContext.GetParticipantsGoals(clientId, db);
-            var compoundCommands = new List<Task>();
+            var pipelineBuilder = new PipelineBuilder(db);
 
             foreach(var test in participant.EnrolledTests) {
                 if(goalsAsSet.ContainsKey("{0}:{1}".FormatWith(test.Name, goal))) {
@@ -124,21 +123,20 @@ namespace Crunch.Repositories
                 }
 
                 _logger.LogDebug("Tracking {0} for test {1}".FormatWith(goal, test.Name));
-                var setRecorded = db.SetAddAsync(
-                        DatabaseKeys.ParticipantGoalsFormat.FormatWith(clientId),
-                        "{0}:{1}".FormatWith(test.Name, goal));
-                var incrementCounter = db.StringIncrementAsync(
-                    DatabaseKeys.ExperimentGoalCountKeyFormat.FormatWith(
-                        test.Name,
-                        test.VersionAtSelection,
-                        test.SelectedVariant,
-                        goal));
 
-                compoundCommands.Add(setRecorded);
-                compoundCommands.Add(incrementCounter);
+                pipelineBuilder.SetAdd(
+                    DatabaseKeys.ParticipantGoalsFormat.FormatWith(clientId),
+                    "{0}:{1}".FormatWith(test.Name, goal));
+
+                pipelineBuilder.StringIncrement(
+                    DatabaseKeys.ExperimentGoalCountKeyFormat.FormatWith(
+                    test.Name,
+                    test.VersionAtSelection,
+                    test.SelectedVariant,
+                    goal));
             }
 
-            db.WaitAll(compoundCommands.ToArray());
+            pipelineBuilder.Execute();
         }
     }
 }

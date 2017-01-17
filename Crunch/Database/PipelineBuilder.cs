@@ -6,8 +6,8 @@ using StackExchange.Redis;
 namespace Crunch.Database
 {
     public class PipelineBuilder {
-        private readonly List<Task> _taskList = new List<Task>();
-        private readonly IDatabase _db;
+        private List<Task> _taskList = new List<Task>();
+        private IDatabase _db;
 
         public PipelineBuilder(IDatabase db) {
             _db = db;
@@ -15,6 +15,14 @@ namespace Crunch.Database
 
         public void StringIncrement(string key) {
             _taskList.Add(_db.StringIncrementAsync(key));
+        }
+
+        public void StringSet(RedisKey key, RedisValue value) {
+            _taskList.Add(_db.StringSetAsync(key, value));
+        }
+
+        public void SetAdd(string key, string value) {
+            _taskList.Add(_db.SetAddAsync(key, value));
         }
 
         public void SetRemove(string key, string value) {
@@ -28,6 +36,9 @@ namespace Crunch.Database
 
         public void Execute() {
             _db.WaitAll(_taskList.ToArray());
+
+            _taskList = null;
+            _db = null;
         }
     }
 }
