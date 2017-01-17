@@ -1,6 +1,0 @@
-web:
-  environment:
-    - REDIS_PORT_6379_TCP_ADDR=${heroku config:get REDIS_URL}
-  build: ./Crunch
-  volumes:
-    - ./Crunch:/app

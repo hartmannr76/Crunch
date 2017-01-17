@@ -1,13 +1,5 @@
 # if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   # if [ "$TRAVIS_BRANCH" == "master" ]; then
-    # docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.heroku.com
-    
-    # Build and push
-    # docker build -t $IMAGE_NAME .
-    # heroku plugins:install heroku-container-registry
-    #heroku container:login
-    # we need to login here somehow
-    docker-compose -f docker-compose.heroku.yml build
     heroku plugins:install heroku-container-registry
     docker login --email=_ --username=_ --password=$HEROKU_API_KEY registry.heroku.com
     echo "Pushing $IMAGE_NAME:latest"
