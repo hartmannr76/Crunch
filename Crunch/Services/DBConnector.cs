@@ -45,7 +45,7 @@ namespace Crunch.Services
 
                     _redisContext = ConnectionMultiplexer.Connect(
                         "{0},ssl=true,password={1},name={2}".FormatWith(
-                            connectionParams,
+                            host,
                             password,
                             "crunch_api"
                         )
