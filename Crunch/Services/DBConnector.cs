@@ -5,6 +5,8 @@ using EasyIoC;
 using EasyIoC.Attributes;
 using Crunch.Extensions;
 using Microsoft.AspNetCore.Hosting;
+using System.Net;
+using System.Linq;
 
 namespace Crunch.Services
 {
@@ -43,9 +45,15 @@ namespace Crunch.Services
                     var host = connectionParams[0];
                     var port = connectionParams[1];
 
+                    //because of https://github.com/dotnet/corefx/issues/8768
+                    var dnsTask = Dns.GetHostAddressesAsync(host);
+                    var addresses = dnsTask.Result;
+                    var connect = string.Join(",", addresses.Select(x => x.MapToIPv4().ToString() + ":" + port));
+                    _logger.LogDebug("Attempting to connect to prod database: {0}".FormatWith(connect));
+
                     _redisContext = ConnectionMultiplexer.Connect(
                         "{0},ssl=true,password={1},name={2}".FormatWith(
-                            host,
+                            connect,
                             password,
                             "crunch_api"
                         )
