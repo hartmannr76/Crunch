@@ -92,7 +92,6 @@ namespace Crunch.Repositories
                     
                     pipelineBuilder.StringIncrement(DatabaseKeys.ExperimentVariantVersionKeyFormat.FormatWith(test, currentTest.Version, selectedVariant));
                     pipelineBuilder.SetRemoveRange(DatabaseKeys.ParticipantGoalsFormat.FormatWith(clientId), experimentGoals);
-                    pipelineBuilder.Execute();
                 }
             }
 
