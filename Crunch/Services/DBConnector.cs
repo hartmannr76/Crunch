@@ -52,7 +52,7 @@ namespace Crunch.Services
                     _logger.LogDebug("Attempting to connect to prod database: {0}".FormatWith(connect));
 
                     _redisContext = ConnectionMultiplexer.Connect(
-                        "{0},ssl=true,password={1},name={2}".FormatWith(
+                        "{0},ssl=false,password={1},name={2}".FormatWith(
                             connect,
                             password,
                             "crunch_api"
