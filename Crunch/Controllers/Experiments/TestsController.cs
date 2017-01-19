@@ -1,21 +1,32 @@
-using Crunch.Services;
+using Crunch.Contexts;
+using Crunch.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Crunch.Models.Experiments;
+using System.Collections.Generic;
+using Crunch.Attributes;
 
 namespace Crunch.Controllers.Experiments
 {
+    [UnavailableIfDisconnected]
     public class TestsController : Controller {
-        private readonly IDBConnector _db;
+        private readonly ITestRepository _testRepository;
+        private readonly ITestContext _testContext;
+        private readonly IParticipantContext _participantContext;
 
-        public TestsController(IDBConnector db) {
-            _db = db;
+        public TestsController(
+            ITestRepository testRepository,
+            ITestContext testContext,
+            IParticipantContext participantContext) {
+            _testRepository = testRepository;
+            _testContext = testContext;
+            _participantContext = participantContext;
         }
 
         [HttpPost]
         [Route("api/experiments/v1/tests")]
         public ActionResult ConfigureTest([FromBody] TestConfiguration model)
         {
-            _db.ConfigureTest(model.Name, model);
+            _testRepository.ConfigureTest(model.Name, model);
 
             return NoContent();
         }
@@ -24,18 +35,37 @@ namespace Crunch.Controllers.Experiments
         [Route("api/experiments/v1/tests/{test}")]
         public ActionResult GetTest(string test)
         {
-            var testConfig = _db.GetTest(test);
+            var testConfig = _testContext.GetTest(test);
 
             return Ok(testConfig);
         }
 
         [HttpGet]
         [Route("api/experiments/v1/tests/{test}/results")]
-        public ActionResult GetTestResults(string test, string version)
+        public ActionResult GetTestResults(string test, string[] goal)
         {
-            var testConfig = _db.GetTest(test);
+            var testConfig = _testContext.GetTest(test);
 
-            return Ok(testConfig);
+            var variantData = new List<object>();
+
+            foreach(var variant in testConfig.Variants) {
+                var count = _participantContext.GetTotalUserCountForVariant(test, variant.Name, testConfig.Version);
+
+                var conversions = new List<object>();
+
+                foreach(var g in goal) {
+                    var goalCount = _testRepository.GetConversionCountForTestAndVariant(test, variant.Name, testConfig.Version, g);
+                    conversions.Add(new {goal = g, count = goalCount});
+                }
+
+                variantData.Add(new {
+                    variant = variant.Name,
+                    users = count,
+                    conversions = conversions
+                });
+            }
+
+            return Ok(variantData);
         }
     }
 }
